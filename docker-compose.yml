@@ -35,7 +35,7 @@ services:
       context: ./frontend
       args:
         # Browser requests use the backend port exposed on the host.
-        NEXT_PUBLIC_API_URL: http://localhost:5000
+        NEXT_PUBLIC_API_URL=http://13.234.128.41:5000
     restart: unless-stopped
     ports:
       - "3001:3000"
