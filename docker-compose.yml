@@ -1,46 +1,20 @@
 services:
-  mysql:
-    image: mysql:8.4
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-12345678}
-      MYSQL_ROOT_HOST: "%"
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-sample_app}
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./backend/database.sql:/docker-entrypoint-initdb.d/database.sql:ro
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-
   backend:
     build:
       context: ./backend
     restart: unless-stopped
     env_file:
       - ./backend/.env
-    environment:
-      # Containers use the MySQL service name instead of localhost.
-      DB_HOST: mysql
     ports:
       - "5000:5000"
-    depends_on:
-      mysql:
-        condition: service_healthy
 
   frontend:
     build:
       context: ./frontend
       args:
-        # Browser requests use the backend port exposed on the host.
-        NEXT_PUBLIC_API_URL=http://13.234.128.41:5000
+        NEXT_PUBLIC_API_URL: http://13.234.128.41:5000
     restart: unless-stopped
     ports:
       - "3001:3000"
     depends_on:
       - backend
-
-volumes:
-  mysql_data:
