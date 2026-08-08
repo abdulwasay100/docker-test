@@ -1,7 +1,6 @@
 services:
   backend:
-    build:
-      context: ./backend
+    image: 237024525392.dkr.ecr.ap-south-1.amazonaws.com/${ECR_BACKEND_REPO}:latest
     restart: unless-stopped
     env_file:
       - ./backend/.env
@@ -9,10 +8,7 @@ services:
       - "5000:5000"
 
   frontend:
-    build:
-      context: ./frontend
-      args:
-        NEXT_PUBLIC_API_URL: http://13.234.128.41:5000
+    image: 237024525392.dkr.ecr.ap-south-1.amazonaws.com/${ECR_FRONTEND_REPO}:latest
     restart: unless-stopped
     ports:
       - "3001:3000"
