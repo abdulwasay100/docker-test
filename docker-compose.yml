@@ -18,3 +18,12 @@ services:
       - "3001:3000"
     depends_on:
       - backend
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db-migration-ec2.c9ug64u4komr.ap-south-1.rds.amazonaws.com
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
