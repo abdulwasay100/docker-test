@@ -6,9 +6,9 @@ echo "Starting server setup..."
 
 sudo apt update
 
-echo "Installing Docker..."
+echo "Installing Docker, Docker Compose and Git..."
 
-sudo apt install -y docker.io docker-compose-plugin
+sudo apt install -y docker.io docker-compose-plugin git
 
 echo "Installing Nginx..."
 
@@ -32,8 +32,24 @@ echo "Docker installation completed."
 
 docker --version
 docker compose version
+git --version
 
-echo "Server setup completed successfully."
+echo "Configuring GitHub SSH..."
+
+mkdir -p /home/ubuntu/.ssh
+chmod 700 /home/ubuntu/.ssh
+
+cat > /home/ubuntu/.ssh/config <<'EOF'
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile /home/ubuntu/.ssh/github_deploy
+    IdentitiesOnly yes
+EOF
+
+chmod 600 /home/ubuntu/.ssh/config
+
+echo "GitHub SSH configuration completed."
 
 echo "Configuring Nginx..."
 
@@ -64,9 +80,17 @@ sudo systemctl restart nginx
 
 echo "Nginx configuration completed."
 
-echo "Starting application..."
+echo "Getting latest application code..."
 
-cd /home/ubuntu/docker-test
+if [ -d "/home/ubuntu/docker-test/.git" ]; then
+    cd /home/ubuntu/docker-test
+    git pull origin main
+else
+    git clone git@github.com:abdulwasay100/docker-test.git /home/ubuntu/docker-test
+    cd /home/ubuntu/docker-test
+fi
+
+echo "Starting application..."
 
 sudo docker compose up -d --build
 
