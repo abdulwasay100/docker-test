@@ -28,6 +28,16 @@ jobs:
             sudo docker compose ps
 
             echo "Checking application..."
-            curl -f http://localhost:3001 || exit 1
 
-            echo "Deployment successful!"
+            for i in {1..10}; do
+              if curl -f http://localhost:3001; then
+                echo "Application is healthy!"
+                exit 0
+              fi
+
+              echo "Application not ready yet... retrying in 3 seconds"
+              sleep 3
+            done
+
+            echo "Application health check failed!"
+            exit 1
