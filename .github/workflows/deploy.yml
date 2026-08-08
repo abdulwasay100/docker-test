@@ -1,4 +1,4 @@
-name: Deploy to EC2
+kname: Deploy to EC2
 
 on:
   push:
@@ -16,36 +16,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Get OIDC claims
-        shell: bash
-        run: |
-          TOKEN=$(curl -sS \
-            -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            -H "Accept: application/json; api-version=2.0" \
-            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" \
-            | jq -r '.value')
-
-          if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
-            echo "Failed to get OIDC token"
-            exit 1
-          fi
-
-          PAYLOAD=$(echo "$TOKEN" | cut -d '.' -f2)
-
-          PAYLOAD=$(echo "$PAYLOAD" | tr '_-' '/+')
-
-          case $((${#PAYLOAD} % 4)) in
-            2) PAYLOAD="${PAYLOAD}==" ;;
-            3) PAYLOAD="${PAYLOAD}=" ;;
-          esac
-
-          echo "$PAYLOAD" | base64 -d 2>/dev/null | jq '{
-            sub,
-            aud,
-            repository,
-            ref
-          }'
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
