@@ -23,3 +23,11 @@ jobs:
             cd ~/docker-test
             git pull origin main
             sudo docker compose up -d --build
+
+            echo "Checking containers..."
+            sudo docker compose ps
+
+            echo "Checking application..."
+            curl -f http://localhost:3001 || exit 1
+
+            echo "Deployment successful!"
