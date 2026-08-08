@@ -119,3 +119,4 @@ To also delete the Docker database and start with an empty database next time:
 ```bash
 docker compose down -v
 ```
+CI/CD deployment test
