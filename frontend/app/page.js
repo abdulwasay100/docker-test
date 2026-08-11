@@ -55,7 +55,7 @@ export default function Home() {
   return (
     <main>
       <section className="card">
-        <h1>THE Users</h1>
+        <h1>THE Users on the list</h1>
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="name">Name</label>
