@@ -23,8 +23,19 @@ sudo /tmp/aws/install
 rm -rf /tmp/aws /tmp/awscliv2.zip
 
 echo "Installing Docker, Docker Compose and required packages..."
-sudo apt install -y docker.io docker-compose-plugin
+echo "Installing Docker..."
 
+sudo apt install -y docker.io
+
+echo "Installing Docker Compose plugin..."
+
+sudo mkdir -p /usr/local/lib/docker/cli-plugins
+
+sudo curl -SL \
+  https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+
+sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 echo "Installing Nginx..."
 sudo apt install -y nginx
 
