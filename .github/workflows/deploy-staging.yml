@@ -1,0 +1,87 @@
+name: Deploy to Staging EC2
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push Backend Image
+        run: |
+          docker build \
+            -t 237024525392.dkr.ecr.ap-south-1.amazonaws.com/docker-test-backend:staging \
+            ./backend
+
+          docker push \
+            237024525392.dkr.ecr.ap-south-1.amazonaws.com/docker-test-backend:staging
+
+      - name: Build and Push Frontend Image
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_API_URL=http://13.205.81.191:5000 \
+            -t 237024525392.dkr.ecr.ap-south-1.amazonaws.com/docker-test-frontend:staging \
+            ./frontend
+
+          docker push \
+            237024525392.dkr.ecr.ap-south-1.amazonaws.com/docker-test-frontend:staging
+
+      - name: Deploy to Staging EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.STAGING_EC2_HOST }}
+          username: ${{ secrets.STAGING_EC2_USER }}
+          key: ${{ secrets.STAGING_EC2_SSH_KEY }}
+
+          script: |
+            cd ~/docker-test
+
+            git pull origin develop
+
+            aws ecr get-login-password --region ap-south-1 | \
+              sudo docker login \
+              --username AWS \
+              --password-stdin \
+              237024525392.dkr.ecr.ap-south-1.amazonaws.com
+
+            sudo docker compose pull
+
+            sudo docker compose up -d
+
+            echo "Checking containers..."
+            sudo docker compose ps
+
+            echo "Checking application..."
+
+            for i in {1..10}; do
+              if curl -f http://localhost:3001; then
+                echo "Staging application is healthy!"
+                exit 0
+              fi
+
+              echo "Application not ready yet... retrying in 3 seconds"
+              sleep 3
+            done
+
+            echo "Staging application health check failed!"
+            exit 1

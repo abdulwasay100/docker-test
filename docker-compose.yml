@@ -1,6 +1,6 @@
 services:
   backend:
-    image: 237024525392.dkr.ecr.ap-south-1.amazonaws.com/docker-test-backend:latest
+    image: 237024525392.dkr.ecr.ap-south-1.amazonaws.com/docker-test-backend:staging
     restart: unless-stopped
     env_file:
       - ./backend/.env
@@ -8,7 +8,7 @@ services:
       - "5000:5000"
 
   frontend:
-    image: 237024525392.dkr.ecr.ap-south-1.amazonaws.com/docker-test-frontend:latest
+    image: 237024525392.dkr.ecr.ap-south-1.amazonaws.com/docker-test-frontend:staging
     restart: unless-stopped
     ports:
       - "3001:3000"
@@ -19,7 +19,7 @@ services:
     image: phpmyadmin/phpmyadmin
     restart: unless-stopped
     environment:
-      PMA_HOST: db-migration-ec2.c9ug64u4komr.ap-south-1.rds.amazonaws.com
-      PMA_PORT: 3306
+      PMA_HOST: ${PMA_HOST}
+      PMA_PORT: ${PMA_PORT:-3306}
     ports:
       - "8080:80"
