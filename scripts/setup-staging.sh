@@ -10,7 +10,17 @@ echo "Updating packages..."
 sudo apt update
 
 echo "Installing AWS CLI..."
-sudo apt install -y awscli
+
+sudo apt install -y curl unzip
+
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" \
+  -o "/tmp/awscliv2.zip"
+
+unzip -q /tmp/awscliv2.zip -d /tmp
+
+sudo /tmp/aws/install
+
+rm -rf /tmp/aws /tmp/awscliv2.zip
 
 echo "Installing Docker, Docker Compose and required packages..."
 sudo apt install -y docker.io docker-compose-plugin
