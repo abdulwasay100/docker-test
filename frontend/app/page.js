@@ -82,7 +82,7 @@ export default function Home() {
 
         {message && <p className="message">{message}</p>}
 
-        <h2> Checking The User list</h2>
+        <h2> SO USER LIST is.... list</h2>
         {users.length === 0 ? (
           <p>No users have been added yet.</p>
         ) : (
