@@ -39,7 +39,7 @@ jobs:
       - name: Build and Push Frontend Image
         run: |
           docker build \
-            --build-arg NEXT_PUBLIC_API_URL=http://13.234.128.41:5000 \
+            --build-arg NEXT_PUBLIC_API_URL="" \
             -t 237024525392.dkr.ecr.ap-south-1.amazonaws.com/docker-test-frontend:latest \
             ./frontend
 
